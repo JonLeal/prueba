@@ -44,28 +44,14 @@ public class MultasServlet extends HttpServlet {
             int studentId=0;
             if(studentIdStr!=null && !studentIdStr.equals(""))
                 studentId=Integer.parseInt(studentIdStr);
-            Multas multa=new Multas();
-            multa=multasDao.getMulta(studentId);
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet MultasServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<div  class=\"col-md-12\">\n" +"\n" +
-"                                                <table border=\"2px\">\n" +"\n" +
-"                                                    <tr>\n" +
-"                                                        <td colspan=\"4\">Nombre Completo: "+multa.getNombre()+" </td>\n" +"\n" +"\n" +
-"                                                    </tr>\n" +
-"                                                    <tr>\n" +
-"                                                        <td>Fecha: "+multa.getFecha()+"</td>\n" +
-"                                                        <td>Valor: "+multa.getValormulta()+"</td>\n" +
-"                                                        <td>Estado: "+multa.getEstado()+"</td>\n" +
-"                                                    </tr>\n" +"\n" +
-"                                                </table>\n" +
-"                                            </div>");
-            out.println("</body>");
-            out.println("</html>");
+            Multas multa=new Multas(0,"No hay Datos de Multas para CC "+studentIdStr,0.0,"","");
+            if(multasDao.getMulta(studentId)!=null)
+                multa=multasDao.getMulta(studentId);
+            request.getSession().setAttribute("nombre", multa.getNombre());
+            request.getSession().setAttribute("fecha", multa.getFecha().toString());
+            request.getSession().setAttribute("valor", multa.getValormulta().toString());
+            request.getSession().setAttribute("estado", multa.getEstado());
+            response.sendRedirect("/prueba/pay.jsp");
         }
     }
 

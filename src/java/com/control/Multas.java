@@ -41,6 +41,15 @@ public class Multas implements Serializable {
     @Size(max = 10)
     @Column(name = "FECHA")
     private String fecha;
+    
+     public Multas(Integer id, String nombre, Double valormulta, String estado, String fecha) {
+        this.id = id;
+        this.nombre = nombre;
+        this.valormulta = valormulta;
+        this.estado = estado;
+        this.fecha = fecha;
+    }
+    
 
     public Multas() {
     }
