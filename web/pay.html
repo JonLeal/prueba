@@ -68,7 +68,7 @@
         <script type="text/javascript">
             function consultar() {
                 document.getElementById('oculto').style.display = 'block';
-            }
+            }            
         </script>
 
     </head>
@@ -169,16 +169,31 @@
                                         <input type="number" name="id" id="mail" />
                                         <h1> </h1> 
                                         <input type="submit" value="Consultar" onclick="consultar()" class="btn btn-primary">
-                                        
-
+                                          
                                     </div>
                                 </div>
                             </form>
+                            
+                        </div>
+                        
+                    </center>
+                  
+                </div>
+                
+                
+                <div id="fh5co-contact" class="animate-box">
+                    <center>
+                        <div class="container">
+                        <form name="reporte" action="PdfServlet">
+                            <div class="row">
+                                    <div class="col-md-6">    
+                            <input type="submit" value="Visualizar Pdf"  name="btnPdf" class="btn btn-primary"/>
+                                    </div>
+                            </div>
+                        </form>
                         </div>
                     </center>
-
                 </div>
-
 
                 <!-- END OF first space -->
                 <center>
