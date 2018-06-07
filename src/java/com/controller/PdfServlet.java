@@ -27,8 +27,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DecimalFormat;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
 
+import com.itextpdf.text.pdf.PdfWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  *
@@ -36,125 +49,220 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "PdfServlet", urlPatterns = {"/PdfServlet"})
 public class PdfServlet extends HttpServlet {
-                     
-                    
-                
+
+    @EJB
+    private MultasDaoLocal multasDao;
+    private BaseFont bfBold;
+    private BaseFont bf;
+    private List<Multas> multas;
+    private int pageNumber = 0;
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application.pdf");
-                
-        
+
         OutputStream out = response.getOutputStream();
-        try{           
-            try{
+        try {
+            String studentIdStr = request.getParameter("id");
+            int studentId = 0;
+            if (studentIdStr != null && !studentIdStr.equals("")) {
+                studentId = Integer.parseInt(studentIdStr);
+            }
+            multas = multasDao.getAllMultas();
+            try {
                 Document documento = new Document();
-                PdfWriter.getInstance(documento, out);
+                PdfWriter docWriter = null;
+                initializeFonts();
 
-                documento.open();
+                try {
+                    docWriter = PdfWriter.getInstance(documento, out);
+                    documento.addAuthor("betterThanZero");
+                    documento.addCreationDate();
+                    documento.addProducer();
+                    documento.addCreator("MySampleCode.com");
+                    documento.addTitle("Reporte Multas");
+                    documento.setPageSize(PageSize.LETTER);
 
-                Paragraph par1 = new Paragraph();
-                Font fontTitulo = new Font(Font.FontFamily.TIMES_ROMAN,20 , Font.BOLD, BaseColor.BLACK);
-                par1.add(new Phrase("Reportes", fontTitulo));
-                par1.setAlignment(Element.ALIGN_CENTER);
-                par1.add(new Phrase(Chunk.NEWLINE));
-                par1.add(new Phrase(Chunk.NEWLINE));
-                documento.add(par1);
-                
-                Paragraph par2 = new Paragraph();
-                Font fontDescrip = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
-                par2.add(new Phrase("Universoft se caracteriza por brindar a sus usuarios la mejor experiencia "
-                        + "para nuestra estadia en este mundo", fontDescrip));
-                par2.setAlignment(Element.ALIGN_JUSTIFIED);
-                par2.add(new Phrase(Chunk.NEWLINE));
-                par2.add(new Phrase(Chunk.NEWLINE));
-                documento.add(par2);
-                            
-                
-                PdfPTable tabla = new PdfPTable(5);
-                PdfPCell celda1 = new PdfPCell(new Paragraph("Id",FontFactory.getFont("Arial", 12, Font.BOLD, BaseColor.BLACK)));
-                PdfPCell celda2 = new PdfPCell(new Paragraph("Nombre",FontFactory.getFont("Arial", 12, Font.BOLD, BaseColor.BLACK)));
-                PdfPCell celda3 = new PdfPCell(new Paragraph("Valor Multa",FontFactory.getFont("Arial", 12, Font.BOLD, BaseColor.BLACK)));
-                PdfPCell celda4 = new PdfPCell(new Paragraph("Estado",FontFactory.getFont("Arial", 12, Font.BOLD, BaseColor.BLACK)));
-                PdfPCell celda5 = new PdfPCell(new Paragraph("Fecha",FontFactory.getFont("Arial", 12, Font.BOLD, BaseColor.BLACK)));
-                tabla.addCell(celda1);
-                tabla.addCell(celda2);
-                tabla.addCell(celda3);
-                tabla.addCell(celda4);
-                tabla.addCell(celda5);
-                
-                tabla.addCell(new PdfPCell(new Paragraph("2173821",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Juan Pepito",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("5445600.0",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Debe",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Abril 22 del 2017",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                
-                 tabla.addCell(new PdfPCell(new Paragraph("56562223",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Andrea Giraldo",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("856610.0",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Debe",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Enero 20 del 2017",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                 
-                tabla.addCell(new PdfPCell(new Paragraph("84479921",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Felipe Sierra",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("5874250.0",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Pago",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Diciembre 27 del 2017",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                 
-                tabla.addCell(new PdfPCell(new Paragraph("12335549",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Estefania Gomez",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("12002300.0",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Debe",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Agosto 30 del 2017",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                 
-                tabla.addCell(new PdfPCell(new Paragraph("13566540",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("German Quintero",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("6987000.0",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Pago",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Enero 30 del 2018",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                 
-                tabla.addCell(new PdfPCell(new Paragraph("7164588",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Cesar Alzate",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("8999000.0",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Debe",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Abril 20 del 2018",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                 
-                tabla.addCell(new PdfPCell(new Paragraph("7620255",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Juan Alzate",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("55884562.0",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Debe",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Septiembre 2 del 2017",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                 
-                tabla.addCell(new PdfPCell(new Paragraph("55522448",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Camilo Paniagua",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("8000000.0",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Pago",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Febrero 5 del 2017",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                 
-                tabla.addCell(new PdfPCell(new Paragraph("8444522",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Stella Ospina",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("6598880.0",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Debe",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Abril 27 del 2018",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                
-                tabla.addCell(new PdfPCell(new Paragraph("55522145",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("David Ospina",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("88442220.0",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Debe",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                tabla.addCell(new PdfPCell(new Paragraph("Diciembre 25 del 2016",FontFactory.getFont("Arial", 9, Font.NORMAL, BaseColor.BLACK))));
-                     
-                documento.add(tabla);
-               
-                
-                documento.close(); 
-            
-            }catch(Exception ex){
-            ex.getMessage();
+                    documento.open();
+                    PdfContentByte cb = docWriter.getDirectContent();
+
+                    boolean beginPage = true;
+                    int y = 0;
+
+                    for (Multas multa : multas) {
+                        if (beginPage) {
+                            beginPage = false;
+                            generateLayout(documento, cb, multa);
+                            generateHeader(documento, cb, multa);
+                            y = 615;
+                        }
+                        generateDetail(documento, cb, multa, y);
+                        y = y - 15;
+                        if (y < 50) {
+                            printPageNumber(cb);
+                            documento.newPage();
+                            beginPage = true;
+                        }
+                    }
+                    printPageNumber(cb);
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                } finally {
+                    if (documento != null) {
+                        documento.close();
+                    }
+                    if (docWriter != null) {
+                        docWriter.close();
+                    }
+                }
+            } catch (Exception ex) {
+                ex.getMessage();
             }
-            
-            
-        }finally{
-                out.close();
-            }
+
+        } finally {
+            out.close();
+        }
+    }
+
+    private void generateLayout(Document doc, PdfContentByte cb, Multas multa) {
+
+        try {
+
+            cb.setLineWidth(1f);
+
+            // Invoice Header box layout
+            cb.rectangle(420, 700, 150, 60);
+            cb.moveTo(420, 720);
+            cb.lineTo(570, 720);
+            cb.moveTo(420, 740);
+            cb.lineTo(570, 740);
+            cb.moveTo(480, 700);
+            cb.lineTo(480, 760);
+            cb.stroke();
+
+            // Invoice Header box Text Headings
+            createHeadings(cb, 422, 743, "No. Multas");
+            createHeadings(cb, 422, 723, "Lugar Reporte");
+            createHeadings(cb, 422, 703, "Fecha Reporte");
+
+            // Invoice Detail box layout
+            cb.rectangle(20, 50, 550, 600);
+            cb.moveTo(20, 630);
+            cb.lineTo(570, 630);
+            cb.moveTo(50, 50);
+            cb.lineTo(50, 650);
+            cb.moveTo(150, 50);
+            cb.lineTo(150, 650);
+            cb.moveTo(430, 50);
+            cb.lineTo(430, 650);
+            cb.moveTo(500, 50);
+            cb.lineTo(500, 650);
+            cb.stroke();
+
+            // Invoice Detail box Text Headings
+            createHeadings(cb, 22, 633, "ID");
+            createHeadings(cb, 52, 633, "Nombre");
+            createHeadings(cb, 152, 633, "Fecha");
+            createHeadings(cb, 432, 633, "Valor");
+            createHeadings(cb, 502, 633, "Estado");
+
+            //add the images
+            Image companyLogo = Image.getInstance("C:\\Users\\natog\\Desktop\\prueba2\\dsa\\prueba\\src\\java\\com\\controller\\logo.png");
+            companyLogo.setAbsolutePosition(40, 680);
+            companyLogo.scalePercent(7);
+            doc.add(companyLogo);
+
+        } catch (DocumentException dex) {
+            dex.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    private void generateHeader(Document doc, PdfContentByte cb, Multas multa) {
+
+        try {
+
+            createHeadings(cb, 200, 750, "UNIVERSOFT");
+            createHeadings(cb, 200, 735, "");
+            createHeadings(cb, 200, 720, "Address Line 2");
+            createHeadings(cb, 200, 705, "Universidad de Antioquia");
+            createHeadings(cb, 200, 690, "Colombia");
+
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            LocalDate localDate = LocalDate.now();
+            System.out.println(dtf.format(localDate));
+            createHeadings(cb, 482, 743, String.valueOf(multas.size()));
+            createHeadings(cb, 482, 723, "Antioquia, Medellin");
+            createHeadings(cb, 482, 703, dtf.format(localDate));
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    private void generateDetail(Document doc, PdfContentByte cb, Multas multa, int y) {
+        DecimalFormat df = new DecimalFormat("0.00");
+
+        try {
+
+            createContent(cb, 48, y, String.valueOf(multa.getId()), PdfContentByte.ALIGN_RIGHT);
+            createContent(cb, 52, y, multa.getNombre(), PdfContentByte.ALIGN_LEFT);
+            createContent(cb, 152, y, multa.getFecha(), PdfContentByte.ALIGN_LEFT);;
+            createContent(cb, 498, y, multa.getValormulta().toString(), PdfContentByte.ALIGN_RIGHT);
+            createContent(cb, 568, y, multa.getEstado(), PdfContentByte.ALIGN_RIGHT);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    private void createHeadings(PdfContentByte cb, float x, float y, String text) {
+
+        cb.beginText();
+        cb.setFontAndSize(bfBold, 8);
+        cb.setTextMatrix(x, y);
+        cb.showText(text.trim());
+        cb.endText();
+
+    }
+
+    private void printPageNumber(PdfContentByte cb) {
+
+        cb.beginText();
+        cb.setFontAndSize(bfBold, 8);
+        cb.showTextAligned(PdfContentByte.ALIGN_RIGHT, "Page No. " + (pageNumber + 1), 570, 25, 0);
+        cb.endText();
+
+        pageNumber++;
+
+    }
+
+    private void createContent(PdfContentByte cb, float x, float y, String text, int align) {
+
+        cb.beginText();
+        cb.setFontAndSize(bf, 8);
+        cb.showTextAligned(align, text.trim(), x, y, 0);
+        cb.endText();
+
+    }
+
+    private void initializeFonts() {
+
+        try {
+            bfBold = BaseFont.createFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+            bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

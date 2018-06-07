@@ -24,8 +24,6 @@ public class MultasServlet extends HttpServlet {
     @EJB
     private MultasDaoLocal multasDao;
 
-     
-
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -37,17 +35,17 @@ public class MultasServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");        
-        
+        response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-            String studentIdStr= request.getParameter("id");
-            int studentId=0;
-            if(studentIdStr!=null && !studentIdStr.equals(""))
-                studentId=Integer.parseInt(studentIdStr);
-            Multas multa=new Multas(0,"No hay Datos de Multas para CC "+studentIdStr,0.0,"","");
-            if(multasDao.getMulta(studentId)!=null)
-                multa=multasDao.getMulta(studentId);
+            String studentIdStr = request.getParameter("id");
+            int studentId = 0;
+            if (studentIdStr != null && !studentIdStr.equals("")) {
+                studentId = Integer.parseInt(studentIdStr);
+            }
+            Multas multa = new Multas();
+            multa = multasDao.getMulta(studentId);
+            request.getSession().setAttribute("id", multa.getId().toString());
             request.getSession().setAttribute("nombre", multa.getNombre());
             request.getSession().setAttribute("fecha", multa.getFecha().toString());
             request.getSession().setAttribute("valor", multa.getValormulta().toString());

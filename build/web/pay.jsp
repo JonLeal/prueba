@@ -1,17 +1,18 @@
-<%-- 
+<%--
     Document   : pay
     Created on : 24/05/2018, 03:24:33 PM
     Author     : Fdieg
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql"%> 
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> 
+<%@taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%
-String nombre = (String)session.getAttribute("nombre");
-String fecha = (String)session.getAttribute("fecha");
-String valor = (String)session.getAttribute("valor");
-String estado = (String)session.getAttribute("estado");
+    String id = (String) session.getAttribute("id");
+    String nombre = (String) session.getAttribute("nombre");
+    String fecha = (String) session.getAttribute("fecha");
+    String valor = (String) session.getAttribute("valor");
+    String estado = (String) session.getAttribute("estado");
 %>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -21,7 +22,7 @@ String estado = (String)session.getAttribute("estado");
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Universoft &mdash; Contactanos</title>
+        <title>Universoft &mdash; Multas</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Free HTML5 Template by FREEHTML5.CO" />
         <meta name="keywords" content="free html5, free template, free bootstrap, html5, css3, mobile first, responsive" />
@@ -29,15 +30,15 @@ String estado = (String)session.getAttribute("estado");
 
         <!--
               //////////////////////////////////////////////////////
-      
+
               FREE HTML5 TEMPLATE
               DESIGNED & DEVELOPED by FREEHTML5.CO
-      
+
               Website: 		http://freehtml5.co/
               Email: 			info@freehtml5.co
               Twitter: 		http://twitter.com/fh5co
               Facebook: 		https://www.facebook.com/fh5co
-      
+
               //////////////////////////////////////////////////////
         -->
 
@@ -67,6 +68,18 @@ String estado = (String)session.getAttribute("estado");
         <link rel="stylesheet" href="css/superfish.css">
 
         <link rel="stylesheet" href="css/style.css">
+        <!--===============================================================================================-->
+        <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+        <!--===============================================================================================-->
+        <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+        <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css">
+        <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="css/util.css">
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+        <!--===============================================================================================-->
 
 
         <!-- Modernizr JS -->
@@ -148,7 +161,6 @@ String estado = (String)session.getAttribute("estado");
                             </div>
                         </div>
                     </header>
-
                 </div>
 
 
@@ -164,63 +176,89 @@ String estado = (String)session.getAttribute("estado");
                 <!-- end:header-top -->
 
 
-                <div id="fh5co-contact" class="animate-box">
-                    <center>
-
-                        <div class="container">
-                            <form action="MultasServlet" method="POST">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <h3 class="section-title">Consulta Tus Multas</h3>
-                                        <label for="name">Tipo de documento</label>
-                                        <select name="select" size="1" style=" font-size:15px;height:30px">
-                                            <option selected value="0"> Elige una opción </option>
-                                            <option value="1">Número de multa</option> 
-                                            <option value="2">Identificación</option>
-                                        </select>
-                                        <h1> </h1> 
-                                        <label for="mail">Nro de documento </label>
-                                        <input type="number" name="id" id="mail" />
-                                        <h1> </h1> 
-                                        <input type="submit" value="Consultar" name="action" onclick="consultar()" class="btn btn-primary">
-                                        
-
-                                    </div>
+                <div id="fh5co-contact" class="animate-box" align="center">
+                    <div class="container text-center row">
+                        <form action="MultasServlet" method="POST">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <h3 class="section-title">Consulta Tus Multas</h3>
                                 </div>
-                            </form>
-                        </div>
-                    </center>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="mail">Numero de Multa</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <input type="number" name="id" id="mail" class="center-block" style="background: grey; color: white;"/>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <input type="submit" value="Consultar" name="action" onclick="consultar()" class="btn btn-primary">
+                                </div>
+                            </div>
+                        </form>
+                        <form name="reporte" action="PdfServlet" align="center">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <input type="submit" value="Reporte de Multas"  name="btnPdf" class="btn btn-primary"/>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
+
                 <!-- END OF first space -->
                 <center>
-                    <div id="fh5co-contact" class="animate-box">
+                    <div id="fh5co-contact" class="animate-box fh5co-section-gray">
                         <div class="container">
+                            <c:set var="nombre" value="${multas.nombre}"/>
                             <form action="MultasServlet" method="POST">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div id ='oculto'  class="row">
-                                            <div  class="col-md-12">
-                                                <table border="2px">
-                                                    <tr>
-                                                        <td colspan="4">Nombre Completo: <input type="text" size="60"  value="<%=nombre%>"/></td>
+                                <!--Empieza Tabla-->
+                                <div class="wrap-table100">
+                                    <div class="table100 ver1">
+                                        <div class="table100-firstcol">
+                                            <table>
+                                                <thead>
+                                                    <tr class="row100 head">
+                                                        <th class="cell100 column1">ID</th>
                                                     </tr>
-                                                    <tr>
-                                                        <td>Fecha: <input type="text"  value="<%=fecha%>"/></td>
-                                                        <td>Valor: <input type="text"  value="<%=valor%>"/></td>
-                                                        <td>Estado: <input type="text"  value="<%=estado%>"/></td>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="row100 body">
+                                                        <td class="cell100 column1"><%=id%></td>
                                                     </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
 
+                                        <div class="wrap-table100-nextcols js-pscroll">
+                                            <div class="table100-nextcols">
+                                                <table>
+                                                    <thead>
+                                                        <tr class="row100 head">
+                                                            <th class="cell100 column2">Nombre</th>
+                                                            <th class="cell100 column3">Fecha</th>
+                                                            <th class="cell100 column4">Valor</th>
+                                                            <th class="cell100 column5">Estado</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class="row100 body">
+                                                            <td class="cell100 column2"><%=nombre%></td>
+                                                            <td class="cell100 column3"><%=fecha%></td>
+                                                            <td class="cell100 column4"><%=valor%></td>
+                                                            <td class="cell100 column5"><%=estado%></td>
+                                                        </tr>
+                                                    </tbody>
                                                 </table>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <H1></H1> 
-                                                <div class="form-group">
-                                                    <input type="submit"  onclick="alert('Esta factura solo es válida por 24 horas, pasado este tiempo deberá generar otra')" value="Generar factura" class="btn btn-primary" >
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <!--TerminaTabla-->
                             </form>
                         </div>
                     </div>
@@ -256,6 +294,40 @@ String estado = (String)session.getAttribute("estado");
 
         <!-- jQuery -->
 
+
+        <!--===============================================================================================-->
+        <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+        <!--===============================================================================================-->
+        <script src="vendor/bootstrap/js/popper.js"></script>
+        <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+        <!--===============================================================================================-->
+        <script src="vendor/select2/select2.min.js"></script>
+        <!--===============================================================================================-->
+        <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+        <script>
+                                            $('.js-pscroll').each(function () {
+                                                var ps = new PerfectScrollbar(this);
+
+                                                $(window).on('resize', function () {
+                                                    ps.update();
+                                                })
+
+                                                $(this).on('ps-x-reach-start', function () {
+                                                    $(this).parent().find('.table100-firstcol').removeClass('shadow-table100-firstcol');
+                                                });
+
+                                                $(this).on('ps-scroll-x', function () {
+                                                    $(this).parent().find('.table100-firstcol').addClass('shadow-table100-firstcol');
+                                                });
+
+                                            });
+
+
+
+
+        </script>
+        <!--===============================================================================================-->
+        <script src="js/main.js"></script>
 
         <script src="js/jquery.min.js"></script>
         <!-- jQuery Easing -->

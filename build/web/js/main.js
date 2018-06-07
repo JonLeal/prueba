@@ -1,17 +1,17 @@
 ;(function () {
-	
+
 	'use strict';
 
 
 
-	// iPad and iPod detection	
+	// iPad and iPod detection
 	var isiPad = function(){
 		return (navigator.platform.indexOf("iPad") != -1);
 	};
 
 	var isiPhone = function(){
 	    return (
-			(navigator.platform.indexOf("iPhone") != -1) || 
+			(navigator.platform.indexOf("iPhone") != -1) ||
 			(navigator.platform.indexOf("iPod") != -1)
 	    );
 	};
@@ -77,11 +77,11 @@
 				}
 			}
 
-		});	
+		});
 
 	}
 
-	
+
 
 	// Click outside of the Mobile Menu
 	var mobileMenuOutsideClick = function() {
@@ -103,7 +103,7 @@
 		$('.animate-box').waypoint( function( direction ) {
 
 			if( direction === 'down' && !$(this.element).hasClass('animated') ) {
-				
+
 				i++;
 
 				$(this.element).addClass('item-animate');
@@ -116,14 +116,14 @@
 							el.removeClass('item-animate');
 						},  k * 200, 'easeInOutExpo' );
 					});
-					
+
 				}, 100);
-				
+
 			}
 
 		} , { offset: '85%' } );
 	};
-	
+
 
 	// Document on load.
 	$(function(){
@@ -132,9 +132,35 @@
 		offcanvas();
 		mobileMenuOutsideClick();
 		contentWayPoint();
-		
+
 
 	});
 
 
 }());
+
+
+(function ($) {
+	"use strict";
+	$('.column100').on('mouseover',function(){
+		var table1 = $(this).parent().parent().parent();
+		var table2 = $(this).parent().parent();
+		var verTable = $(table1).data('vertable')+"";
+		var column = $(this).data('column') + "";
+
+		$(table2).find("."+column).addClass('hov-column-'+ verTable);
+		$(table1).find(".row100.head ."+column).addClass('hov-column-head-'+ verTable);
+	});
+
+	$('.column100').on('mouseout',function(){
+		var table1 = $(this).parent().parent().parent();
+		var table2 = $(this).parent().parent();
+		var verTable = $(table1).data('vertable')+"";
+		var column = $(this).data('column') + "";
+
+		$(table2).find("."+column).removeClass('hov-column-'+ verTable);
+		$(table1).find(".row100.head ."+column).removeClass('hov-column-head-'+ verTable);
+	});
+
+
+})(jQuery);
